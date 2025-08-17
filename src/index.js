@@ -1,18 +1,18 @@
 import express from "express";
 import dotenv from "dotenv";
 import connectDB from "./db/index.js";
+import { error } from "console";
 
 dotenv.config();
 
-// ✅ Debug: check env values
-console.log("ENV PORT:", process.env.PORT);
-console.log("ENV MONGODB_URI:", process.env.MONGODB_URI);
-
 const app = express();
 
-connectDB();
-
-app.listen(process.env.PORT, () => {
-  console.log(`Server running on port ${process.env.PORT}`);
-});
-
+connectDB()
+.then( () => {
+  app.listen(process.env.PORT || 8000 , () => {
+    console.log(`SEVER is running at port , ${process.env.PORT}`);
+  })
+})
+.catch(() => {
+  console.log("MONGODB CONNECTION FAILED" , error);
+})
