@@ -1,6 +1,7 @@
 import { Timestamp } from "bson";
 import mongoose , {Schema, SchemaType} from "mongoose";
 import { types } from "util";
+import mongooseAggregatePaginate from "mongoose-aggregate-paginate";
 
 const Video_schema = new Schema({
     Videofile : {
@@ -36,4 +37,7 @@ const Video_schema = new Schema({
         ref:"User"
     }
 },{timestamps:true})
+
+Video_schema.plugin(mongooseAggregatePaginate)
+
 export const Video = mongoose.model("Video" , Video_schema)
