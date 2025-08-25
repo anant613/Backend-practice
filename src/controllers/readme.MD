@@ -1,3 +1,5 @@
+REGISTER USER
+
 📝 1. Collect User Details
 
 Gather required information from the user (through request body or form):
