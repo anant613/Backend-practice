@@ -24,7 +24,12 @@ const registerUser = asyncHANDLER( async (req,res) => {
       }
 
       const avatarLocalPath = req.files?.avatar[0]?.path;
-      const CoverphotoLocalPath = req.files?.coverimage[0]?.path;
+      //const CoverphotoLocalPath = req.files?.coverimage[0]?.path;
+
+      let CoverphotoLocalPath;
+      if (req.files && Array.isArray(req.files.coverimage) && req.files.coverimage.length > 0) {
+        CoverphotoLocalPath =req.files.coverimage[0].path
+      }
 
       //check if required details are entered images and avtar
       if(!avatarLocalPath){
