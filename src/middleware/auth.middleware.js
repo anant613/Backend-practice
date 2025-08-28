@@ -13,7 +13,7 @@ export const verifyJWT = asyncHANDLER(async(req,res,next) =>
             throw new apierror(401,"Unauthorized request")
         }
     
-        const decoded_token = jwt.verify(token , proccess.env.ACCESS_TOKEN_SECRET)
+        const decoded_token = jwt.verify(token , process.env.ACCESS_TOKEN_SECRET)
     
         const user = await User.findById(decoded_token?._id).select(" -password -Refreshtoken")
     
