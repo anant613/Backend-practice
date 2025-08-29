@@ -156,4 +156,129 @@ const RefreshAcessToken = asyncHANDLER(async (req, res) => {
   }
 });
 
-export { registerUser, login_user, logoutUser, RefreshAcessToken };
+// Change Current Password
+const changeCurrentPassword = asyncHANDLER(async (req , res) => {
+  const {oldPassword , newPassword } = req.body
+
+  const user = await User.findById(req.user?._id)
+  const isPasswordCorrect = await user.isPasswordCorrect(oldPassword)
+  
+  if (!isPasswordCorrect) {
+    throw new apierror(400 , " Invalid old password ")
+  }
+
+  user.password = newPassword
+  user.save({validateBeforeSave : false})
+
+  return res
+  .status(200)
+  .json(new ApiResponse(200 , {} , "Password changed succesfully"))
+})
+
+//Get current user
+const getCurrentUser = asyncHANDLER(async (req , res) => {
+  return res
+  .status(200)
+  .json(200 , req.user , "Current user Fetched Sucessfully")
+
+}) 
+
+//Update Account 
+const Updateaccountdetails = asyncHANDLER(async (req , res) => {
+  const {fullName , email} = req.body
+
+  if (!fullName || !email) {
+    throw new apierror(400 , "All fields are required")    
+  }
+
+  const user = User.findByIdAndUpdate(req.user?._id,
+    {
+      $set : {
+        fullName , 
+        email : email 
+      }
+    },
+    {new:true}
+    
+    ).select("-password")
+
+    return res.status(200)
+    .json(new ApiResponse
+      (200 , user , "Account details updated sucessfully"))
+})
+
+//update avatar
+const updateUserAvatar = asyncHANDLER (async (req , res) => {
+  const avatarLocalPath = req.file?.path
+
+  if (!avatarLocalPath) {
+    throw new apierror( 400 , "Avatar file is missing")
+  }
+
+  const avatar = await uploadOnClaudinary(avatarLocalPath)
+
+  if (!avatar.url) {
+    throw new apierror( 400 , "Error while uploading on avatar")
+  }
+
+  await User.findByIdAndUpdate(
+    req.user?._id,
+    {
+      $set : {
+        avatar : avatar.url
+      }
+    }, 
+    {new : true}
+  ).select( "-password")
+
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(200 , user , "Cover image updated sucessfully")
+    )
+})
+
+//update cover image
+const updateUserCoverimge = asyncHANDLER (async (req , res) => {
+  const CoverimageLocalPath = req.file?.path
+
+  if (!CoverimageLocalPath) {
+    throw new apierror( 400 , "Cover image file is missing")
+  }
+
+  const coverimage = await uploadOnClaudinary(CoverimageLocalPath)
+
+  if (!coverimage.url) {
+    throw new apierror( 400 , "Error while uploading on coverimage")
+  }
+
+  const user = await User.findByIdAndUpdate(
+    req.user?._id,
+    {
+      $set : {
+        coverimage : coverimage.url
+      }
+    }, 
+    {new : true}
+  ).select( "-password")
+
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(200 , user , "Cover image updated sucessfully")
+    )
+})
+
+
+
+export { 
+   registerUser, 
+   login_user, 
+   logoutUser, 
+   RefreshAcessToken ,
+   changeCurrentPassword , 
+   getCurrentUser , 
+   Updateaccountdetails , 
+   updateUserAvatar , 
+   updateUserCoverimge
+  };
